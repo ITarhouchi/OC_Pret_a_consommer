@@ -24,7 +24,7 @@ st.set_page_config(page_title = 'Prêt à dépenser Dashboard',
 page_bg_img = '''
 <style>
 .stApp {
-background-image: url("https://raw.githubusercontent.com/ITarhouchi/OpenClassrooms_Parcours_DS/main/innovations-speed-and-simplicity.jpg");
+background-image: url("https://raw.githubusercontent.com/ITarhouchi/OC_Pret_a_consommer/master/bg.jpg");
 background-size: cover;
 }
 </style>
