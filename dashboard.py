@@ -13,6 +13,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import base64
+import joblib
 
 # CONFIGURATION DE LA PAGE
 ############################################################
@@ -32,6 +33,16 @@ background-size: cover;
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
+# CHARGEMENT DU DATASET TEST
+#############################
+url_test = 
+test_df = pd.read_csv(url_test, index_col=0)
+url_train = 
+train_df = pd.read_csv(url_train, index_col=0)
+url_model = 
+model = joblib.load(url_model)
+
+
 # IDENTIFIANT CLIENT
 #########################
 ### top row 
@@ -40,14 +51,19 @@ sk_id_curr, score, decision = st.beta_columns(3)
 
 with sk_id_curr:
     st.markdown("**Identifiant de la demande**")
-    text = st.text_input('Entrer SK_ID_CURR')
+    code = st.text_input('Entrer SK_ID_CURR')
     if st.button('Simuler la demande'):
+        data_client = test_df[test_df['SK_ID_CURR']==code]
+        score_value = model.predict_proba(data_client)
         with score:
             st.markdown("**Score**")
-            st.write('CA MARCHE')
+            st.write(score_value)
         with decision:
             st.markdown("**Décison**")
-            st.write('1 000 000 €')
+            if score_value > 0.5:
+                st.write('Demande de prêt acceptée')
+            else:
+                st.write('Demande de prêt refusée')
         #number1 = 0.1  
     #st.markdown(f"<h1 style='text-align: center; color: grey;'>{number1}</h1>", unsafe_allow_html=True)
 
