@@ -1,0 +1,52 @@
+import streamlit as st 
+
+# Général
+import numpy as np
+import pandas as pd
+import joblib
+import gc
+import time
+from contextlib import contextmanager
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import chi2_contingency
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+pd.set_option('display.max_row', 250)
+pd.set_option('display.max_column', 200)
+
+# Modélisation - Preprocessing
+from sklearn.model_selection import cross_val_score, KFold, StratifiedKFold, train_test_split
+from sklearn.feature_selection import RFE
+from sklearn.compose import make_column_transformer
+from sklearn.pipeline import make_pipeline as mp1
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer, SimpleImputer
+from imblearn.pipeline import make_pipeline as mp2
+from imblearn.over_sampling import SMOTE, RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler, TomekLinks
+from imblearn.combine import SMOTETomek, SMOTEENN
+
+# Modélisation - Model
+from imblearn.ensemble import BalancedRandomForestClassifier, EasyEnsembleClassifier
+from sklearn.dummy import DummyClassifier
+from sklearn.neighbors import NearestNeighbors
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from xgboost import XGBClassifier
+from sklearn.linear_model import BayesianRidge, LinearRegression, LogisticRegression
+
+# Modélisation - Metrics
+from sklearn.metrics import confusion_matrix, fbeta_score, f1_score
+from sklearn.metrics import make_scorer, roc_auc_score
+
+# Modélisation - Grille de recherche
+from hyperopt import tpe, hp, fmin, STATUS_OK, Trials
+from hyperopt.pyll.base import scope
+import joblib
+
+from io import BytesIO
+import requests
