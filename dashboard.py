@@ -9,28 +9,28 @@ Created on Sun Jul  4 17:17:44 2021
 #                       PRET A CONSOMMER DASHBOARD
 ##############################################################################
 
-# import streamlit as st 
+import streamlit as st 
 
-# # Général
-# import pandas as pd
-# import joblib
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-# import warnings
-# warnings.simplefilter(action='ignore', category=FutureWarning)
-# pd.set_option('display.max_row', 250)
-# pd.set_option('display.max_column', 200)
+# Général
+import pandas as pd
+import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+pd.set_option('display.max_row', 250)
+pd.set_option('display.max_column', 200)
 
-# # Modélisation - Preprocessing
-# from sklearn.preprocessing import StandardScaler
-# from sklearn.impute import SimpleImputer
-# from sklearn.compose import make_column_transformer
+# Modélisation - Preprocessing
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
+from sklearn.compose import make_column_transformer
 
-# # Modélisation - Model
-# from sklearn.neighbors import NearestNeighbors
+# Modélisation - Model
+from sklearn.neighbors import NearestNeighbors
 
-# from io import BytesIO
-# import requests
+from io import BytesIO
+import requests
 
 # FONCTIONS UTILSEES DANS LE DASHBOARD
 #############################
@@ -40,7 +40,7 @@ def load_df(url):
     df = pd.read_csv(url)
     return df
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def load_joblib(url):
     """Load joblib file from cloud"""
     model_file = BytesIO(requests.get(url).content)
@@ -188,28 +188,28 @@ st.set_page_config(page_title = 'Prêt à dépenser Dashboard',
 
 # CHARGEMENT DES DATASETS, LISTES ET MODELES
 ####################################################
-#url_train = "gs://oc_projet_7_test_df/train_df.csv"
-url_train = 'train_df_bis.csv'
+url_train = "gs://oc_projet_7_test_df/train_df_bis.csv"
+#url_train = 'train_df_bis.csv'
 train_df = load_df(url_train)
 
-#url_test = "gs://oc_projet_7_test_df/test_df.csv"
-url_test = 'test_df_bis.csv'
+url_test = "gs://oc_projet_7_test_df/test_df_bis.csv"
+#url_test = 'test_df_bis.csv'
 test_df = load_df(url_test)
 
 
-#url_model = "https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/xgb_bestmodel_custom.sav?raw=true"
-#pip = load_joblib(url_model)
+url_model = "https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/bestmodel_custom.sav?raw=true"
+pip = load_joblib(url_model)
 #model_file = BytesIO(requests.get(url_model).content)
-model_file = 'rf_bestmodel_f1.sav'
-pip = joblib.load(model_file)
+#model_file = 'bestmodel_custom.sav'
+#pip = joblib.load(model_file)
 
-# url_app_num = 
-# num_cols = load_joblib(url_app_num)
-# url_app_cat = 
-# cat_cols = load_joblib(url_app_cat)
+url_app_num = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_num.sav?raw=true'
+num_cols = load_joblib(url_app_num)
+url_app_cat = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_cat.sav?raw=true'
+cat_cols = load_joblib(url_app_cat)
 
-num_cols = joblib.load('app_num.sav')
-cat_cols = joblib.load('app_cat.sav')
+#num_cols = joblib.load('app_num.sav')
+#cat_cols = joblib.load('app_cat.sav')
 
 preprocessing = preprocess(num_cols, cat_cols)
 
