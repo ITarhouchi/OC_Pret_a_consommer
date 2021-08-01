@@ -4,7 +4,7 @@ joblib
 matplotlib
 seaborn
 xgboost
-warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings
 sklearn.preprocessing.StandardScaler
 sklearn.impute.SimpleImputer
 sklearn.compose.make_column_transformer
