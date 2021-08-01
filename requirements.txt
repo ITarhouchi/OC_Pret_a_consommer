@@ -5,6 +5,7 @@ import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
+import xgboost as xgb
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_row', 250)
