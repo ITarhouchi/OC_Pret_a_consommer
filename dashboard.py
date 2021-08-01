@@ -224,7 +224,8 @@ test_df = load_df(url_test)
 #url_model = r'C:\Users\ilyas\Documents\ILYAS\Reconversion_Data_Scientist\Openclassrooms\Cours\Projet 7\xgb_bestmodel_custom.json'
 #url_model = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/xgb_bestmodel_custom.bin?raw=true'
 #url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom.bin'
-url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom.json'
+#url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom.json'
+url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/bestmodel_custom.sav'
 model = load_xgb(url_model)
 
 url_app_num = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_num.sav?raw=true'
