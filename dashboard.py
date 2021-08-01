@@ -14,6 +14,8 @@ import streamlit as st
 # Général
 import pandas as pd
 import joblib
+import xgboost as xgb
+#import gcsfs
 import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
@@ -40,6 +42,21 @@ def load_df(url):
     df = pd.read_csv(url)
     return df
 
+#@st.cache
+# def load_xgb(url):
+#     """Load XGB model from cloud"""
+#     bst = xgb.Booster({'nthread': 4})
+#     bst.load_model(url)
+#     model = xgb.XGBClassifier()
+#     model._Booster = bst
+#     return model
+
+def load_xgb(url):
+    """Load XGB model from cloud"""
+    model = xgb.XGBClassifier()
+    model.load_model(url)
+    return model
+
 @st.cache(allow_output_mutation=True)
 def load_joblib(url):
     """Load joblib file from cloud"""
@@ -47,20 +64,20 @@ def load_joblib(url):
     file = joblib.load(model_file)    
     return file
 
-@st.cache
-def pred(code_client, pip):
+#@st.cache
+def pred(code_client, model):
     feats = [f for f in test_df.columns if f not in ['TARGET','SK_ID_CURR','SK_ID_BUREAU','SK_ID_PREV','index']]
     index_client = test_df[test_df['SK_ID_CURR']==code_client].index
     data_client = test_df[feats].loc[index_client, :]
-    prediction = pip.predict_proba(data_client)[0][0]
+    prediction = model.predict_proba(data_client)[0][0]
     return prediction
     
-@st.cache
-def list_feats_imp(pip):
+#@st.cache
+def list_feats_imp(model):
     """List of important features"""
     feats = [f for f in test_df.columns if f not in ['TARGET','SK_ID_CURR','SK_ID_BUREAU','SK_ID_PREV','index']]
     feature_names = test_df[feats].columns.to_list()
-    importances = pip[-1].feature_importances_
+    importances = model.feature_importances_
     forest_importances = pd.Series(importances, index=feature_names)
     list_feats_imp_tot = forest_importances.sort_values(ascending=False).index.to_list()
     list_feats_imp = [feat for feat in list_feats_imp_tot if feat in num_cols]
@@ -103,10 +120,10 @@ def nn_client(code_client):
 def stat_plot(n_feats):
     """Plot of Boxplot"""
     mean_style = {"marker":"o","markerfacecolor":"red", "markeredgecolor":"grey"}
-    final_feats = list_feats_imp(pip)[:n_feats]
+    final_feats = list_feats_imp(model)[:n_feats]
     sns.set()
     if n_feats==5:
-        figsize=(15, 7)
+        figsize=(20, 7)
     elif n_feats==10:
         figsize=(40, 15)
     fig, ax = plt.subplots(1, n_feats, figsize=figsize)
@@ -123,10 +140,10 @@ def stat_plot(n_feats):
 #@st.cache(suppress_st_warning=True)
 def credit_plot(credit, n_feats):
     """Plot of max or min credit"""
-    final_feats = list_feats_imp(pip)[:n_feats]
+    final_feats = list_feats_imp(model)[:n_feats]
     sns.set()
     if n_feats==5:
-        figsize=(15, 7)
+        figsize=(20, 7)
     elif n_feats==10:
         figsize=(40, 15)
     fig, ax = plt.subplots(1, n_feats, figsize=figsize)
@@ -139,10 +156,10 @@ def credit_plot(credit, n_feats):
 #@st.cache(suppress_st_warning=True)
 def client_plot(code_client, n_feats):
     """Plot of data client"""
-    final_feats = list_feats_imp(pip)[:n_feats]
+    final_feats = list_feats_imp(model)[:n_feats]
     sns.set()
     if n_feats==5:
-        figsize=(15, 7)
+        figsize=(20, 7)
     elif n_feats==10:
         figsize=(40, 15)
     fig, ax = plt.subplots(1, n_feats, figsize=figsize)
@@ -157,7 +174,7 @@ def client_plot(code_client, n_feats):
 #@st.cache(suppress_st_warning=True)
 def client_compare_plot(code_client, n_feats):
     """Plot of data client and compare with other client"""
-    final_feats = list_feats_imp(pip)[:n_feats]
+    final_feats = list_feats_imp(model)[:n_feats]
     data_client = test_df[test_df['SK_ID_CURR']==code_client][final_feats]
     sample_0, sample_1 = nn_client(code_client)
     data = pd.concat([data_client, sample_1[final_feats], sample_0[final_feats]])
@@ -166,7 +183,7 @@ def client_compare_plot(code_client, n_feats):
                               data=data.values)
     sns.set()
     if n_feats==5:
-        figsize=(15, 7)
+        figsize=(20, 7)
     elif n_feats==10:
         figsize=(40, 15)
     fig, ax = plt.subplots(1, n_feats, figsize=figsize)
@@ -188,28 +205,35 @@ st.set_page_config(page_title = 'Prêt à dépenser Dashboard',
 
 # CHARGEMENT DES DATASETS, LISTES ET MODELES
 ####################################################
-url_train = "gs://oc_projet_7_test_df/train_df_bis.csv"
-#url_train = 'train_df_bis.csv'
+#url_train = "gs://oc_projet_7_test_df/train_df_bis.csv"
+url_train = 'https://storage.googleapis.com/oc_projet_7_test_df/train_df_ter.csv'
 train_df = load_df(url_train)
 
-url_test = "gs://oc_projet_7_test_df/test_df_bis.csv"
+#url_test = "gs://oc_projet_7_test_df/test_df_bis.csv"
+url_test = "https://storage.googleapis.com/oc_projet_7_test_df/test_df_ter.csv"
 #url_test = 'test_df_bis.csv'
 test_df = load_df(url_test)
 
 
-url_model = "https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/bestmodel_custom.sav?raw=true"
-pip = load_joblib(url_model)
+#url_model = "https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/bestmodel_custom.sav?raw=true"
+#pip = load_joblib(url_model)
 #model_file = BytesIO(requests.get(url_model).content)
 #model_file = 'bestmodel_custom.sav'
 #pip = joblib.load(model_file)
 
-url_app_num = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_num.sav?raw=true'
-num_cols = load_joblib(url_app_num)
-url_app_cat = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_cat.sav?raw=true'
-cat_cols = load_joblib(url_app_cat)
+#url_model = r'C:\Users\ilyas\Documents\ILYAS\Reconversion_Data_Scientist\Openclassrooms\Cours\Projet 7\xgb_bestmodel_custom.json'
+#url_model = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/xgb_bestmodel_custom.bin?raw=true'
+#url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom.bin'
+url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom.json'
+model = load_xgb(url_model)
 
-#num_cols = joblib.load('app_num.sav')
-#cat_cols = joblib.load('app_cat.sav')
+#url_app_num = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_num.sav?raw=true'
+#num_cols = load_joblib(url_app_num)
+#url_app_cat = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_cat.sav?raw=true'
+#cat_cols = load_joblib(url_app_cat)
+
+num_cols = joblib.load('app_num.sav')
+cat_cols = joblib.load('app_cat.sav')
 
 preprocessing = preprocess(num_cols, cat_cols)
 
@@ -251,7 +275,7 @@ with sk_id_curr:
                        # text_input('Entrer SK_ID_CURR (valeurs entre ...')
    # if st.button('Simuler la demande'):
     code_value = int(code_select)
-    score_value = pred(code_value, pip)
+    score_value = pred(code_value, model)
     with score:
         st.markdown("**Score**")
         st.write("{:.2f}".format(score_value))
