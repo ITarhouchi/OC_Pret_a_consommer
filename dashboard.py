@@ -14,8 +14,6 @@ import streamlit as st
 # Général
 import pandas as pd
 import joblib
-import xgboost as xgb
-#import gcsfs
 import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
@@ -41,21 +39,6 @@ def load_df(url):
     """Load dataframe from cloud"""
     df = pd.read_csv(url)
     return df
-
-#@st.cache
-# def load_xgb(url):
-#     """Load XGB model from cloud"""
-#     bst = xgb.Booster({'nthread': 4})
-#     bst.load_model(url)
-#     model = xgb.XGBClassifier()
-#     model._Booster = bst
-#     return model
-
-def load_xgb(url):
-    """Load XGB model from cloud"""
-    model = xgb.XGBClassifier()
-    model.load_model(url)
-    return model
 
 @st.cache(allow_output_mutation=True)
 def load_joblib(url):
@@ -108,7 +91,7 @@ def nn_client(code_client):
     df_drop_prep = preprocess(num_cols, cat_cols).fit_transform(df_drop)
     data_client = df_drop_prep[index_client]
     neigh = nn_fit(train_df)
-    nn_index = neigh.kneighbors(data_client, 20, return_distance=False)
+    nn_index = neigh.kneighbors(data_client, 100, return_distance=False)
     NN_df = train_df.loc[nn_index[0].tolist(), :]
     NN_df_0 = NN_df[NN_df['TARGET']==0]
     NN_df_1 = NN_df[NN_df['TARGET']==1]    
@@ -205,38 +188,19 @@ st.set_page_config(page_title = 'Prêt à dépenser Dashboard',
 
 # CHARGEMENT DES DATASETS, LISTES ET MODELES
 ####################################################
-#url_train = "gs://oc_projet_7_test_df/train_df_bis.csv"
 url_train = 'https://storage.googleapis.com/oc_projet_7_test_df/train_df_ter.csv'
 train_df = load_df(url_train)
 
-#url_test = "gs://oc_projet_7_test_df/test_df_bis.csv"
 url_test = "https://storage.googleapis.com/oc_projet_7_test_df/test_df_ter.csv"
-#url_test = 'test_df_bis.csv'
 test_df = load_df(url_test)
 
-
-#url_model = "https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/bestmodel_custom.sav?raw=true"
-#pip = load_joblib(url_model)
-#model_file = BytesIO(requests.get(url_model).content)
-#model_file = 'bestmodel_custom.sav'
-#pip = joblib.load(model_file)
-
-#url_model = r'C:\Users\ilyas\Documents\ILYAS\Reconversion_Data_Scientist\Openclassrooms\Cours\Projet 7\xgb_bestmodel_custom.json'
-#url_model = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/xgb_bestmodel_custom.bin?raw=true'
-#url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom.bin'
-#url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom.json'
-url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/bestmodel_custom.sav'
-model = load_xgb(url_model)
+url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom_joblib.json'
+model = load_joblib(url_model)
 
 url_app_num = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_num.sav?raw=true'
-#num_cols = load_joblib(url_app_num)
+num_cols = load_joblib(url_app_num)
 url_app_cat = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_cat.sav?raw=true'
-#cat_cols = load_joblib(url_app_cat)
-#num_cols = joblib.load(url_app_num)
-#cat_cols = joblib.load(url_app_cat)
-
-num_cols = joblib.load('app_num.sav')
-cat_cols = joblib.load('app_cat.sav')
+cat_cols = load_joblib(url_app_cat)
 
 preprocessing = preprocess(num_cols, cat_cols)
 
@@ -246,16 +210,16 @@ min_credit = train_df[train_df['AMT_CREDIT']==min(train_df['AMT_CREDIT'])]
 
 # FOND D'ECRAN
 ############################################################
-#page_bg_img = '''
-#<style>
-#.stApp {
-#background-image: url("https://raw.githubusercontent.com/ITarhouchi/OC_Pret_a_consommer/master/bg.jpg");
-#background-size: cover;
-#}
-#</style>
-#'''
+page_bg_img = '''
+<style>
+.stApp {
+background-image: url("https://raw.githubusercontent.com/ITarhouchi/OC_Pret_a_consommer/master/bg.jpg");
+background-size: cover;
+}
+</style>
+'''
 
-#st.markdown(page_bg_img, unsafe_allow_html=True)
+st.markdown(page_bg_img, unsafe_allow_html=True)
 
 # IDENTIFIANT / DECISION
 #########################
