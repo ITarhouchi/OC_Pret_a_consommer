@@ -4,7 +4,6 @@ joblib
 matplotlib
 seaborn
 xgboost
-warnings
 sklearn.preprocessing.StandardScaler
 sklearn.impute.SimpleImputer
 sklearn.compose.make_column_transformer
