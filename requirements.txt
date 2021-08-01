@@ -4,9 +4,6 @@ joblib
 matplotlib
 seaborn
 xgboost
-sklearn.preprocessing.StandardScaler
-sklearn.impute.SimpleImputer
-sklearn.compose.make_column_transformer
-sklearn.neighbors.NearestNeighbors
-io.BytesIO
+sklearn
+io
 requests
