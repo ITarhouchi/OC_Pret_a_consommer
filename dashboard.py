@@ -227,10 +227,12 @@ test_df = load_df(url_test)
 url_model = 'https://storage.googleapis.com/oc_projet_7_test_df/xgb_bestmodel_custom.json'
 model = load_xgb(url_model)
 
-#url_app_num = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_num.sav?raw=true'
+url_app_num = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_num.sav?raw=true'
 #num_cols = load_joblib(url_app_num)
-#url_app_cat = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_cat.sav?raw=true'
+url_app_cat = 'https://github.com/ITarhouchi/OC_Pret_a_consommer/blob/master/app_cat.sav?raw=true'
 #cat_cols = load_joblib(url_app_cat)
+#num_cols = joblib.load(url_app_num)
+#cat_cols = joblib.load(url_app_cat)
 
 num_cols = joblib.load('app_num.sav')
 cat_cols = joblib.load('app_cat.sav')
