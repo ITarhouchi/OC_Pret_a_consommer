@@ -3,7 +3,7 @@ pandas
 joblib
 matplotlib
 seaborn
-xgboost as xgb
+xgboost
 warnings.simplefilter(action='ignore', category=FutureWarning)
 sklearn.preprocessing.StandardScaler
 sklearn.impute.SimpleImputer
