@@ -208,16 +208,16 @@ st.set_page_config(page_title = 'Prêt à dépenser Dashboard',
 
 # FOND D'ECRAN
 ############################################################
-page_bg_img = '''
-<style>
-.stApp {
-background-image: url("https://storage.googleapis.com/oc_projet_7_test_df/bg.jpg");
-background-size: cover;
-}
-</style>
-'''
+# page_bg_img = '''
+# <style>
+# .stApp {
+# background-image: url("https://storage.googleapis.com/oc_projet_7_test_df/bg.jpg");
+# background-size: cover;
+# }
+# </style>
+# '''
 
-st.markdown(page_bg_img, unsafe_allow_html=True)
+# st.markdown(page_bg_img, unsafe_allow_html=True)
 
 # IDENTIFIANT / DECISION
 #########################
