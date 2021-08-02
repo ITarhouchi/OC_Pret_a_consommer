@@ -4,4 +4,3 @@ joblib==0.17.0
 matplotlib==3.3.4
 seaborn==0.11.1
 sklearn
-xgboost==1.4.0
